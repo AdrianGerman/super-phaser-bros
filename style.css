@@ -1,0 +1,10 @@
+body {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  background: #242424;
+}
+
+#game {
+  border: 1px solid white;
+}
