@@ -33,7 +33,27 @@ function create() {
     .setOrigin(0, 1);
 
   // personaje
-  this.add.sprite(50, 210, "mario").setOrigin(0, 1);
+  this.mario = this.add.sprite(50, 210, "mario").setOrigin(0, 1);
+
+  this.anims.create({
+    key: "mario-walk",
+    frames: this.anims.generateFrameNumbers("mario", { start: 3, end: 1 }),
+    frameRate: 12,
+    repeat: -1,
+  });
+
+  this.keys = this.input.keyboard.createCursorKeys();
 }
 
-function update() {}
+function update() {
+  if (this.keys.left.isDown) {
+    this.mario.x -= 2;
+    this.mario.anims.play("mario-walk", true);
+  } else if (this.keys.right.isDown) {
+    this.mario.x += 2;
+    this.mario.anims.play("mario-walk", true);
+  } else {
+    this.mario.anims.stop();
+    this.mario.setFrame(0);
+  }
+}
