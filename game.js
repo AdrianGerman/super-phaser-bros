@@ -69,33 +69,39 @@ function create() {
 }
 
 function update() {
-  if (this.mario.isDead) return;
+  const { keys, mario } = this;
+  const isMarioTouchingFloor = mario.body.touching.down;
+  const isLeftKeyDown = keys.left.isDown;
+  const isRightKeyDown = keys.right.isDown;
+  const isUpKeyDown = keys.up.isDown;
 
-  if (this.keys.left.isDown) {
-    this.mario.anims.play("mario-walk", true);
-    this.mario.x -= 2;
-    this.mario.flipX = true;
-  } else if (this.keys.right.isDown) {
-    this.mario.anims.play("mario-walk", true);
-    this.mario.x += 2;
-    this.mario.flipX = false;
-  } else {
-    this.mario.anims.play("mario-idle", true);
+  if (mario.isDead) return;
+
+  if (isLeftKeyDown) {
+    mario.anims.play("mario-walk", true);
+    mario.x -= 2;
+    mario.flipX = true;
+  } else if (isRightKeyDown) {
+    mario.anims.play("mario-walk", true);
+    mario.x += 2;
+    mario.flipX = false;
+  } else if (isMarioTouchingFloor) {
+    mario.anims.play("mario-idle", true);
   }
 
-  if (this.keys.up.isDown && this.mario.body.touching.down) {
-    this.mario.setVelocityY(-300);
-    this.mario.anims.play("mario-jump", true);
+  if (isUpKeyDown && isMarioTouchingFloor) {
+    mario.setVelocityY(-300);
+    mario.anims.play("mario-jump", true);
   }
 
-  if (this.mario.y >= config.height) {
-    this.mario.isDead = true;
-    this.mario.anims.play("mario-dead");
-    this.mario.setCollideWorldBounds(false);
+  if (mario.y >= config.height) {
+    mario.isDead = true;
+    mario.anims.play("mario-dead");
+    mario.setCollideWorldBounds(false);
     this.sound.add("gameover", { volume: 0.2 }).play();
 
     setTimeout(() => {
-      this.mario.setVelocityY(-350);
+      mario.setVelocityY(-350);
     }, 100);
 
     setTimeout(() => {
