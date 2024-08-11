@@ -1,3 +1,5 @@
+import { createAnimations } from "./animations.js";
+
 const config = {
   type: Phaser.AUTO,
   width: 256,
@@ -50,26 +52,16 @@ function create() {
   this.mario = this.physics.add
     .sprite(50, 100, "mario")
     .setOrigin(0, 1)
-    .setCollideWorldBounds(true);
+    .setCollideWorldBounds(true)
+    .setGravityY(500);
 
+  this.physics.world.setBounds(0, 0, 2000, config.height);
   this.physics.add.collider(this.mario, this.floor);
 
-  this.anims.create({
-    key: "mario-walk",
-    frames: this.anims.generateFrameNumbers("mario", { start: 3, end: 1 }),
-    frameRate: 12,
-    repeat: -1,
-  });
+  this.cameras.main.setBounds(0, 0, 2000, config.height);
+  this.cameras.main.startFollow(this.mario);
 
-  this.anims.create({
-    key: "mario-idle",
-    frames: [{ key: "mario", frame: "0" }],
-  });
-
-  this.anims.create({
-    key: "mario-jump",
-    frames: [{ key: "mario", frame: "5" }],
-  });
+  createAnimations(this);
 
   this.keys = this.input.keyboard.createCursorKeys();
 }
@@ -87,8 +79,8 @@ function update() {
     this.mario.anims.play("mario-idle", true);
   }
 
-  if (this.keys.up.isDown) {
-    this.mario.y -= 5;
+  if (this.keys.up.isDown && this.mario.body.touching.down) {
+    this.mario.setVelocityY(-300);
     this.mario.anims.play("mario-jump", true);
   }
 }

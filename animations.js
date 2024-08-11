@@ -1,0 +1,18 @@
+export const createAnimations = (game) => {
+  game.anims.create({
+    key: "mario-walk",
+    frames: this.anims.generateFrameNumbers("mario", { start: 3, end: 1 }),
+    frameRate: 12,
+    repeat: -1,
+  });
+
+  game.anims.create({
+    key: "mario-idle",
+    frames: [{ key: "mario", frame: "0" }],
+  });
+
+  game.anims.create({
+    key: "mario-jump",
+    frames: [{ key: "mario", frame: "5" }],
+  });
+};
