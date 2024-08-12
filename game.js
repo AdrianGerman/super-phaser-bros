@@ -35,7 +35,15 @@ function preload () {
     frameHeight: 16
   })
 
+  // audios
   this.load.audio('gameover', 'assets/sound/music/gameover.mp3')
+  this.load.audio('goomba-stomp', 'assets/sound/effects/goomba-stomp.wav')
+
+  // enemigos
+  this.load.spritesheet('goomba', 'assets/entities/overworld/goomba.png', {
+    frameWidth: 16,
+    frameHeight: 16
+  })
 }
 
 function create () {
@@ -52,7 +60,6 @@ function create () {
     .refreshBody()
 
   // personaje
-  // this.mario = this.add.sprite(50, 210, "mario").setOrigin(0, 1);
 
   this.mario = this.physics.add
     .sprite(50, 100, 'mario')
@@ -60,8 +67,16 @@ function create () {
     .setCollideWorldBounds(true)
     .setGravityY(500)
 
+  this.enemy = this.physics.add
+    .sprite(120, config.height - 30, 'goomba')
+    .setOrigin(0, 1)
+    .setGravityY(500)
+    .setVelocityX(-50)
+
   this.physics.world.setBounds(0, 0, 2000, config.height)
   this.physics.add.collider(this.mario, this.floor)
+  this.physics.add.collider(this.enemy, this.floor)
+  this.physics.add.collider(this.mario, this.enemy, onHitEnemy, null, this)
 
   this.cameras.main.setBounds(0, 0, 2000, config.height)
   this.cameras.main.startFollow(this.mario)
@@ -69,6 +84,21 @@ function create () {
   createAnimations(this)
 
   this.keys = this.input.keyboard.createCursorKeys()
+  this.enemy.anims.play('goomba-walk', true)
+}
+
+function onHitEnemy (mario, enemy) {
+  if (mario.body.touching.down && enemy.body.touching.up) {
+    enemy.anims.play('goomba-hurt', true)
+    enemy.setVelocityX(0)
+    mario.setVelocityY(-200)
+    this.sound.play('goomba-stomp')
+    setTimeout(() => {
+      enemy.destroy()
+    }, 500)
+  } else {
+    // el caso de que mario muera
+  }
 }
 
 function update () {
@@ -80,7 +110,7 @@ function update () {
     mario.isDead = true
     mario.anims.play('mario-dead')
     mario.setCollideWorldBounds(false)
-    sound.add('gameover', { volume: 0.2 }).play()
+    sound.add('gameover', { volume: 0.05 }).play()
 
     setTimeout(() => {
       mario.setVelocityY(-350)
