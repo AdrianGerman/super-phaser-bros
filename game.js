@@ -97,29 +97,36 @@ function onHitEnemy (mario, enemy) {
       enemy.destroy()
     }, 500)
   } else {
-    // el caso de que mario muera
+    killMario(this)
   }
 }
 
 function update () {
-  checkControls(this)
-  const { mario, scene } = this
+  const { mario } = this
 
+  checkControls(this)
   // Check if mario is dead
   if (mario.y >= config.height) {
-    mario.isDead = true
-    mario.anims.play('mario-dead')
-    mario.setCollideWorldBounds(false)
-    try {
-      playAudio('gameover', this, { volume: 0.05 })
-    } catch (e) {}
-
-    setTimeout(() => {
-      mario.setVelocityY(-350)
-    }, 100)
-
-    setTimeout(() => {
-      scene.restart()
-    }, 2000)
+    killMario(this)
   }
+}
+
+function killMario (game) {
+  const { mario, scene } = game
+
+  if (mario.isDead) return
+  mario.isDead = true
+  mario.anims.play('mario-dead')
+  mario.setCollideWorldBounds(false)
+  playAudio('gameover', game, { volume: 0.05 })
+  mario.body.checkCollision.none = true
+  mario.setVelocityX(0)
+
+  setTimeout(() => {
+    mario.setVelocityY(-300)
+  }, 100)
+
+  setTimeout(() => {
+    scene.restart()
+  }, 2000)
 }
