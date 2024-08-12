@@ -1,6 +1,7 @@
 /* eslint-disable no-new */
 /* eslint-disable no-undef */
 import { createAnimations } from './animations.js'
+import { initAudio, playAudio } from './audio.js'
 import { checkControls } from './controls.js'
 
 const config = {
@@ -36,8 +37,7 @@ function preload () {
   })
 
   // audios
-  this.load.audio('gameover', 'assets/sound/music/gameover.mp3')
-  this.load.audio('goomba-stomp', 'assets/sound/effects/goomba-stomp.wav')
+  initAudio(this)
 
   // enemigos
   this.load.spritesheet('goomba', 'assets/entities/overworld/goomba.png', {
@@ -92,7 +92,7 @@ function onHitEnemy (mario, enemy) {
     enemy.anims.play('goomba-hurt', true)
     enemy.setVelocityX(0)
     mario.setVelocityY(-200)
-    this.sound.play('goomba-stomp')
+    playAudio('goomba-stomp', this)
     setTimeout(() => {
       enemy.destroy()
     }, 500)
@@ -103,14 +103,16 @@ function onHitEnemy (mario, enemy) {
 
 function update () {
   checkControls(this)
-  const { mario, sound, scene } = this
+  const { mario, scene } = this
 
   // Check if mario is dead
   if (mario.y >= config.height) {
     mario.isDead = true
     mario.anims.play('mario-dead')
     mario.setCollideWorldBounds(false)
-    sound.add('gameover', { volume: 0.05 }).play()
+    try {
+      playAudio('gameover', this, { volume: 0.05 })
+    } catch (e) {}
 
     setTimeout(() => {
       mario.setVelocityY(-350)
