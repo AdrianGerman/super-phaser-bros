@@ -1,6 +1,7 @@
 /* eslint-disable no-new */
 /* eslint-disable no-undef */
 import { createAnimations } from './animations.js'
+import { checkControls } from './controls.js'
 
 const config = {
   type: Phaser.AUTO,
@@ -71,43 +72,22 @@ function create () {
 }
 
 function update () {
-  const { keys, mario } = this
-  const isMarioTouchingFloor = mario.body.touching.down
-  const isLeftKeyDown = keys.left.isDown
-  const isRightKeyDown = keys.right.isDown
-  const isUpKeyDown = keys.up.isDown
+  checkControls(this)
+  const { mario, sound, scene } = this
 
-  if (mario.isDead) return
-
-  if (isLeftKeyDown) {
-    mario.anims.play('mario-walk', true)
-    mario.x -= 2
-    mario.flipX = true
-  } else if (isRightKeyDown) {
-    mario.anims.play('mario-walk', true)
-    mario.x += 2
-    mario.flipX = false
-  } else if (isMarioTouchingFloor) {
-    mario.anims.play('mario-idle', true)
-  }
-
-  if (isUpKeyDown && isMarioTouchingFloor) {
-    mario.setVelocityY(-300)
-    mario.anims.play('mario-jump', true)
-  }
-
+  // Check if mario is dead
   if (mario.y >= config.height) {
     mario.isDead = true
     mario.anims.play('mario-dead')
     mario.setCollideWorldBounds(false)
-    this.sound.add('gameover', { volume: 0.2 }).play()
+    sound.add('gameover', { volume: 0.2 }).play()
 
     setTimeout(() => {
       mario.setVelocityY(-350)
     }, 100)
 
     setTimeout(() => {
-      this.scene.restart()
+      scene.restart()
     }, 2000)
   }
 }
