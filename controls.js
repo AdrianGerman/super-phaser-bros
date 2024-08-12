@@ -1,8 +1,8 @@
 export function checkControls ({ mario, keys }) {
   const isMarioTouchingFloor = mario.body.touching.down
-  const isLeftKeyDown = keys.left.isDown
-  const isRightKeyDown = keys.right.isDown
-  const isUpKeyDown = keys.up.isDown
+  const isLeftKeyDown = keys.left.isDown || keys.a.isDown
+  const isRightKeyDown = keys.right.isDown || keys.d.isDown
+  const isUpKeyDown = keys.up.isDown || keys.w.isDown || keys.space.isDown
 
   if (mario.isDead) return
 

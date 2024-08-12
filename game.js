@@ -85,6 +85,19 @@ function create () {
 
   this.keys = this.input.keyboard.createCursorKeys()
   this.enemy.anims.play('goomba-walk', true)
+
+  // Configurar las teclas
+  this.keys = this.input.keyboard.addKeys({
+    up: Phaser.Input.Keyboard.KeyCodes.UP,
+    down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+    left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+    right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+    w: Phaser.Input.Keyboard.KeyCodes.W,
+    a: Phaser.Input.Keyboard.KeyCodes.A,
+    s: Phaser.Input.Keyboard.KeyCodes.S,
+    d: Phaser.Input.Keyboard.KeyCodes.D,
+    space: Phaser.Input.Keyboard.KeyCodes.SPACE
+  })
 }
 
 function onHitEnemy (mario, enemy) {
@@ -123,7 +136,7 @@ function killMario (game) {
   mario.setVelocityX(0)
 
   setTimeout(() => {
-    mario.setVelocityY(-300)
+    mario.setVelocityY(-350)
   }, 100)
 
   setTimeout(() => {
