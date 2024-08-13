@@ -99,6 +99,29 @@ function create () {
 function collectCoin (mario, coin) {
   coin.disableBody(true, true)
   playAudio('coin-pickup', this, { volume: 0.05 })
+  addToScore(100, coin, this)
+}
+
+function addToScore (scoreToAdd, origin, game) {
+  const scoreText = game.add.text(origin.x, origin.y, scoreToAdd, {
+    fontFamily: 'pixel',
+    fontSize: config.width / 40
+  })
+  game.tweens.add({
+    targets: scoreText,
+    duration: 500,
+    y: scoreText.y - 20,
+    onComplete: () => {
+      game.tweens.add({
+        targets: scoreText,
+        duration: 100,
+        alpha: 0,
+        onComplete: () => {
+          scoreText.destroy()
+        }
+      })
+    }
+  })
 }
 
 function onHitEnemy (mario, enemy) {
@@ -107,6 +130,7 @@ function onHitEnemy (mario, enemy) {
     enemy.setVelocityX(0)
     mario.setVelocityY(-200)
     playAudio('goomba-stomp', this)
+    addToScore(200, enemy, this)
     setTimeout(() => {
       enemy.destroy()
     }, 500)
