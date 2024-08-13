@@ -3,6 +3,7 @@
 import { createAnimations } from './animations.js'
 import { initAudio, playAudio } from './audio.js'
 import { checkControls } from './controls.js'
+import { initSpritesheet } from './spritesheet.js'
 
 const config = {
   type: Phaser.AUTO,
@@ -30,23 +31,15 @@ function preload () {
   this.load.image('cloud1', 'assets/scenery/overworld/cloud1.png')
   this.load.image('floorbricks', 'assets/scenery/overworld/floorbricks.png')
 
-  // personaje
-  this.load.spritesheet('mario', 'assets/entities/mario.png', {
-    frameWidth: 18,
-    frameHeight: 16
-  })
+  initSpritesheet(this)
 
   // audios
   initAudio(this)
-
-  // enemigos
-  this.load.spritesheet('goomba', 'assets/entities/overworld/goomba.png', {
-    frameWidth: 16,
-    frameHeight: 16
-  })
 }
 
 function create () {
+  createAnimations(this)
+
   // mapa
   this.add.image(100, 50, 'cloud1').setOrigin(0, 0).setScale(0.15)
   this.floor = this.physics.add.staticGroup()
@@ -65,13 +58,18 @@ function create () {
     .sprite(50, 100, 'mario')
     .setOrigin(0, 1)
     .setCollideWorldBounds(true)
-    .setGravityY(500)
+    .setGravityY(300)
 
   this.enemy = this.physics.add
     .sprite(120, config.height - 30, 'goomba')
     .setOrigin(0, 1)
     .setGravityY(500)
     .setVelocityX(-50)
+
+  this.coins = this.physics.add.staticGroup()
+  this.coins.create(150, 150, 'coin').anims.play('coin-idle', true)
+  this.coins.create(300, 150, 'coin').anims.play('coin-idle', true)
+  this.physics.add.overlap(this.mario, this.coins, collectCoin, null, this)
 
   this.physics.world.setBounds(0, 0, 2000, config.height)
   this.physics.add.collider(this.mario, this.floor)
@@ -80,8 +78,6 @@ function create () {
 
   this.cameras.main.setBounds(0, 0, 2000, config.height)
   this.cameras.main.startFollow(this.mario)
-
-  createAnimations(this)
 
   this.keys = this.input.keyboard.createCursorKeys()
   this.enemy.anims.play('goomba-walk', true)
@@ -98,6 +94,11 @@ function create () {
     d: Phaser.Input.Keyboard.KeyCodes.D,
     space: Phaser.Input.Keyboard.KeyCodes.SPACE
   })
+}
+
+function collectCoin (mario, coin) {
+  coin.disableBody(true, true)
+  playAudio('coin-pickup', this, { volume: 0.05 })
 }
 
 function onHitEnemy (mario, enemy) {
