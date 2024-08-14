@@ -15,7 +15,7 @@ const config = {
     default: 'arcade',
     arcade: {
       gravity: { y: 300 },
-      debug: false
+      debug: true
     }
   },
   scene: {
@@ -70,8 +70,16 @@ function create () {
   this.collectibes = this.physics.add.staticGroup()
   this.collectibes.create(150, 150, 'coin').anims.play('coin-idle', true)
   this.collectibes.create(300, 150, 'coin').anims.play('coin-idle', true)
-  this.collectibes.create(200, config.height - 40, 'supermushroom').anims.play('supermushroom-idle', true)
-  this.physics.add.overlap(this.mario, this.collectibes, collectItem, null, this)
+  this.collectibes
+    .create(200, config.height - 40, 'supermushroom')
+    .anims.play('supermushroom-idle', true)
+  this.physics.add.overlap(
+    this.mario,
+    this.collectibes,
+    collectItem,
+    null,
+    this
+  )
 
   this.physics.world.setBounds(0, 0, 2000, config.height)
   this.physics.add.collider(this.mario, this.floor)
@@ -99,7 +107,9 @@ function create () {
 }
 
 function collectItem (mario, item) {
-  const { texture: { key } } = item
+  const {
+    texture: { key }
+  } = item
   item.destroy()
 
   if (key === 'coin') {
@@ -107,7 +117,27 @@ function collectItem (mario, item) {
     playAudio('coin-pickup', this, { volume: 0.05 })
     addToScore(100, item, this)
   } else if (key === 'supermushroom') {
-    mario.anims.play('mario-grown-idle', true)
+    this.physics.world.pause()
+    playAudio('powerup', this, { volume: 0.1 })
+
+    let i = 0
+    const interval = setInterval(() => {
+      i++
+      mario.anims.play(i % 2 === 0 ? 'mario-grown-idle' : 'mario-idle')
+    }, 100)
+
+    mario.isBlocked = true
+    mario.isGrown = true
+
+    setTimeout(() => {
+      mario.setDisplaySize(18, 32)
+      mario.body.setSize(18, 32)
+      this.anims.pauseAll()
+      mario.isBlocked = false
+      clearInterval(interval)
+      this.physics.world.resume()
+      this.anims.resumeAll()
+    }, 1000)
   }
 }
 
